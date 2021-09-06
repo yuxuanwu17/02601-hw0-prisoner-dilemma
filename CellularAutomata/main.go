@@ -16,10 +16,11 @@ import (
 
 func main() {
 	fmt.Println("Cellular automata!")
-	neighborhood := "Moore"                                      //"vonNeumann" or "Moore"
-	ruleFile := "CellularAutomata/rules/GoL_rules.txt"           //where are rule strings found?
-	initialBoardFile := "CellularAutomata/boards/rPentomino.txt" // my starting GameBoard file name
-	outputFile := "CellularAutomata/output/"                     // where to draw the final animated GIF of boards
+	neighborhood := "Moore"                               //"vonNeumann" or "Moore"
+	ruleFile := "CellularAutomata/rules/GoL_rules.txt"    //where are rule strings found?
+	initialBoardFile := "CellularAutomata/boards/f99.txt" // my starting GameBoard file name
+	//initialBoardFile := "CellularAutomata/boards/rPentomino.txt" // my starting GameBoard file name
+	outputFile := "CellularAutomata/output/" // where to draw the final animated GIF of boards
 	//neighborhood := os.Args[1]     //"vonNeumann" or "Moore"
 	//ruleFile := os.Args[2]         //where are rule strings found?
 	//initialBoardFile := os.Args[3] // my starting GameBoard file name
@@ -44,10 +45,12 @@ func main() {
 	ruleStrings := ReadRulesFromFile(ruleFile)
 	fmt.Println("Rules are read in successfully!")
 
+	// the board is a n by n matrix
 	initialBoard := ReadBoardFromFile(initialBoardFile)
-
-	fmt.Println("The initial board is.", len(initialBoard[0]))
-	//fmt.Println("The initial board is.", initialBoard)
+	fmt.Println("The initial board column is.", len(initialBoard[0]))
+	fmt.Println("The initial board column is.", initialBoard[0])
+	fmt.Println("The initial board row is.", len(initialBoard))
+	fmt.Println("The initial board is.", initialBoard)
 
 	fmt.Println("Playing the automaton.")
 

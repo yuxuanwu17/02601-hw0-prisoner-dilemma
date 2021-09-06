@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 )
 
 // NEED function to read in rule in current form of Moore and then produce all possible rules.
@@ -44,6 +43,11 @@ func WriteStringsToFile(patterns []string, filename string) {
 	}
 }
 
+//
+
+//func Convert2Int(filename string) GameBoard {
+//
+//}
 
 //ReadBoardFromFile takes a filename as a string and reads in the data provided
 //in this file, returning a game board.
@@ -57,19 +61,35 @@ func ReadBoardFromFile(filename string) GameBoard {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
+
+	count := 0
 	for scanner.Scan() {
+		// skip the first line of the scanner
+		if count == 0 {
+			count++
+			continue
+		}
 		currentLine := scanner.Text()
 		currentArray := make([]int, 0)
 
 		for i := range currentLine {
-			val, err2 := strconv.Atoi(currentLine[i : i+1])
-			if err2 != nil {
-				panic("Error: Issue converting string to int from file.")
+			// converting the string format to the binary 1 or 0 files
+			var val = currentLine[i : i+1]
+			var valInt int
+			if val == "C" {
+				valInt = 1
+			} else {
+				valInt = 0
 			}
-			currentArray = append(currentArray, val)
+			//
+			//if err2 != nil {
+			//	panic("Error: Issue converting string to int from file.")
+			//}
+			currentArray = append(currentArray, valInt)
 		}
 
 		board = append(board, currentArray)
+		count++
 	}
 
 	if err := scanner.Err(); err != nil {
