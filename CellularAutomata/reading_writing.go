@@ -43,11 +43,12 @@ func WriteStringsToFile(patterns []string, filename string) {
 	}
 }
 
-//
-
-//func Convert2Int(filename string) GameBoard {
-//
-//}
+/*
+type Cell struct {
+	strategy string  //represents "C" or "D" corresponding to the type of prisoner in the cell
+	score    float64 //represents the score of the cell based on the prisoner's relationship with neighboring cells
+}
+*/
 
 //ReadBoardFromFile takes a filename as a string and reads in the data provided
 //in this file, returning a game board.
@@ -69,27 +70,15 @@ func ReadBoardFromFile(filename string) GameBoard {
 			count++
 			continue
 		}
+
 		currentLine := scanner.Text()
-		currentArray := make([]int, 0)
+		currentArray := make([]Cell, 0)
 
 		for i := range currentLine {
-			// converting the string format to the binary 1 or 0 files
-			var val = currentLine[i : i+1]
-			var valInt int
-			if val == "C" {
-				// cooperation
-				valInt = 1
-			} else {
-				//defect
-				valInt = 0
-			}
-			//
-			//if err2 != nil {
-			//	panic("Error: Issue converting string to int from file.")
-			//}
-			currentArray = append(currentArray, valInt)
+			val := currentLine[i : i+1]
+			cell := Cell{strategy: val, score: 0}
+			currentArray = append(currentArray, cell)
 		}
-
 		board = append(board, currentArray)
 		count++
 	}

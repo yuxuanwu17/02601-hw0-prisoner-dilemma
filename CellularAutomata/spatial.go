@@ -11,7 +11,7 @@ type Cell struct {
 }
 
 // The game board is a 2D slice of Cell objects
-//type GameBoard [][]Cell
+type GameBoard [][]Cell
 
 func main() {
 	fmt.Println("Prisoner paradox initialized")
