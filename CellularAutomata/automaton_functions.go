@@ -1,21 +1,20 @@
 package main
 
-import "strconv"
-
 type GameBoard [][]int
 
-func PlayAutomaton(initialBoard GameBoard, numGens int, neighborhood string, ruleStrings []string) []GameBoard {
+// neighborhood "moore" string
+func PlaySpatialGames(initialBoard GameBoard, numGens int) []GameBoard {
 	boards := make([]GameBoard, numGens+1)
 	boards[0] = initialBoard
 
 	for i := 1; i <= numGens; i++ {
-		boards[i] = UpdateBoard(boards[i-1], neighborhood, ruleStrings)
+		boards[i] = UpdateBoard(boards[i-1])
 	}
 
 	return boards
 }
 
-func UpdateBoard(currBoard GameBoard, neighborhood string, ruleStrings []string) GameBoard {
+func UpdateBoard(currBoard GameBoard) GameBoard {
 	// first, create new board corresponding to the next generation.
 	// let's have all cells have state 0 to begin.
 	numRows := CountRows(currBoard)
@@ -30,7 +29,7 @@ func UpdateBoard(currBoard GameBoard, neighborhood string, ruleStrings []string)
 		// range over values in currBoard[r]
 		for c := 1; c < numCols-1; c++ {
 			//curr value is currBoard[r][c]
-			newBoard[r][c] = UpdateCell(currBoard, r, c, neighborhood, ruleStrings)
+			newBoard[r][c] = UpdateCell(currBoard, r, c)
 		}
 	}
 
@@ -38,80 +37,54 @@ func UpdateBoard(currBoard GameBoard, neighborhood string, ruleStrings []string)
 	return newBoard
 }
 
-//UpdateCell takes a gameboard along with row and col indices and consults a collection of rule strings for a given neighborhood type to update cell state at given row and col indices.
-func UpdateCell(board GameBoard, r, c int, neighborhood string, ruleStrings []string) int {
-	// range through rule strings and look for a match ... very different for the two neighborhood types
-	for _, rule := range ruleStrings {
-		if RuleMatch(board, r, c, neighborhood, rule) == true {
-			// match found! Return last element of current rule string
-			finalSymbol := string(rule[len(rule)-1])
-			// convert finalSymbol to int
-			newState, err := strconv.Atoi(finalSymbol)
-			if err != nil {
-				panic("Error: problem in converting final rule string symbol.")
+//UpdateCell takes a gameboard along with row and col indices and
+//it returns the state of the board at these row/col indices is in the next generation
+func UpdateCell(board GameBoard, r, c int) int {
+	numCorpNbrs := CountCorpCenterNbrs(board, r, c)
+	if board[r][c] == 1 {
+		// corporation
+
+		// 比较
+		// board[r][c] ==0 的策略，算出来一个值
+		// 这里写是update的策略
+
+	} else {
+		// defect
+
+	}
+
+}
+return -1 // we know we didn't find a match
+}
+
+
+func CountCorpCenterNbrs(board GameBoard, r, c int) int {
+	count := 0
+
+	for i := r - 1; i <= r+1; i++ {
+		for j := c - 1; j <= c+1; j++ {
+			if (i != r || j != c) &&
+				InField(board, i, j) {
+				if board[i][j] == 1 {
+					count++
+				}
 			}
-			return newState
 		}
+
 	}
-	// we need a default value
-	panic("Error: we couldn't find a matching rule string to update cell.")
-	return -1 // we know we didn't find a match
 }
 
-//RuleMatch takes a GameBoard board, row/col indices r, c, a neighborhood parameter (vonNeumann or Moore), and a rule string.
-//It returns true if neighborhood of board[r][c] matches rule, and false otherwise.
-func RuleMatch(board GameBoard, r, c int, neighborhood, rule string) bool {
-	// branch based on neighborhood type.
-	if neighborhood == "vonNeumann" {
-		return RuleMatchVN(board, r, c, rule)
-	} else if neighborhood == "Moore" {
-		return RuleMatchMoore(board, r, c, rule)
+// InField takes a GameBoard board as well as row and col indices (i,j) and returns truer if board[i][j] is in the board and false otherwise
+func InField(board GameBoard, i, j int) bool {
+	if i < 0 || j < 0 {
+		return false
 	}
-	panic("Error: invalid neighborhood type given to RuleMatch().")
-	return false
-}
+	if i >= CountRows(board) || j >= CountCols(board) {
+		return false
+	}
 
-func RuleMatchVN(board GameBoard, r, c int, rule string) bool {
-	center := strconv.Itoa(board[r][c])
-	north := strconv.Itoa(board[r-1][c])
-	east := strconv.Itoa(board[r][c+1])
-	south := strconv.Itoa(board[r+1][c])
-	west := strconv.Itoa(board[r][c-1])
-	if center != string(rule[0]) {
-		return false
-	}
-	if north != string(rule[1]) {
-		return false
-	}
-	if east != string(rule[2]) {
-		return false
-	}
-	if south != string(rule[3]) {
-		return false
-	}
-	if west != string(rule[4]) {
-		return false
-	}
-	return true // we made it! rule must match
-}
-
-func RuleMatchMoore(board GameBoard, r, c int, rule string) bool {
-	center := strconv.Itoa(board[r][c])
-	northwest := strconv.Itoa(board[r-1][c-1])
-	north := strconv.Itoa(board[r-1][c])
-	northeast := strconv.Itoa(board[r-1][c+1])
-	east := strconv.Itoa(board[r][c+1])
-	southeast := strconv.Itoa(board[r+1][c+1])
-	south := strconv.Itoa(board[r+1][c])
-	southwest := strconv.Itoa(board[r+1][c-1])
-	west := strconv.Itoa(board[r][c-1])
-
-	// see if we find a mismatch with the current rule and any of the cell and its eight neighbors
-	if center != string(rule[0]) || northwest != string(rule[1]) || north != string(rule[2]) || northeast != string(rule[3]) || east != string(rule[4]) || southeast != string(rule[5]) || south != string(rule[6]) || southwest != string(rule[7]) || west != string(rule[8]) {
-		return false
-	}
-	// if we survived, the rule matches!
 	return true
+
 }
 
 func CountRows(board GameBoard) int {
@@ -127,7 +100,8 @@ func CountCols(board GameBoard) int {
 	return len(board[0])
 }
 
-//InitializeBoard takes a number of rows and columns as inputs and returns a gameboard with appropriate number of rows and colums, where all values = 0.
+//InitializeBoard takes a number of rows and columns as inputs and
+//returns a gameboard with appropriate number of rows and colums, where all values = 0.
 func InitializeBoard(numRows, numCols int) GameBoard {
 	// make a 2-D slice (default values = false)
 	var board GameBoard

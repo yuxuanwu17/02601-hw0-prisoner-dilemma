@@ -77,8 +77,10 @@ func ReadBoardFromFile(filename string) GameBoard {
 			var val = currentLine[i : i+1]
 			var valInt int
 			if val == "C" {
+				// cooperation
 				valInt = 1
 			} else {
+				//defect
 				valInt = 0
 			}
 			//
