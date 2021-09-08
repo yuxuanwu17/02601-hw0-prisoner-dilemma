@@ -17,6 +17,11 @@ func main() {
 	fmt.Println("Prisoner paradox initialized")
 	initialBoardFile := "CellularAutomata/boards/f99.txt" // my starting GameBoard file name
 
+	// set the weight b
+
 	initialBoard := ReadBoardFromFile(initialBoardFile)
 	fmt.Println(initialBoard)
+
+	updateOnce := PlaySpatialGames(initialBoard, 10, 2)
+	fmt.Println(updateOnce)
 }
