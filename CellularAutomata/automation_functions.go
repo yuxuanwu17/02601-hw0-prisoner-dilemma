@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 func PlaySpatialGames(initialBoard GameBoard, numGens int, b float64) []GameBoard {
 	boards := make([]GameBoard, numGens+1)
 	boards[0] = initialBoard
@@ -17,12 +15,11 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 	numRows := CountRows(currBoard)
 	numCols := CountCols(currBoard)
 	newBoard := InitializeBoard(numRows, numCols)
-	strategyReplace := false
 
 	for r := 0; r < numRows; r++ {
 		for c := 0; c < numCols; c++ {
 			//注意这里返回的是key-val形式的{C 0}
-			newBoard[r][c] = ObtainNeighbors(currBoard, r, c, numRows, numCols, b, strategyReplace)
+			newBoard[r][c] = ObtainNeighbors(currBoard, r, c, numRows, numCols, b)
 		}
 	}
 
@@ -30,11 +27,10 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 	newStrategyBoard := newBoard
 	// 遍历整个数组
 
-	strategyReplace = true
 	//
 	for r := 0; r < numRows; r++ {
 		for c := 0; c < numCols; c++ {
-			newStrategyBoard[r][c] = ObtainNeighbors(newBoard, r, c, numRows, numCols, b, strategyReplace)
+			newStrategyBoard[r][c] = StrateyReplaceByNbrs(newStrategyBoard, r, c, numRows, numCols, b)
 		}
 	}
 
@@ -43,13 +39,8 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 
 // i（横）,j（纵） 代表的是neighbor的位置 [0,0] [numCol,numRow]的情况
 // 关于边和行的问题，他需要考虑是否重叠的问题
-
-func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64, strategyReplace bool) Cell {
+func StrateyReplaceByNbrs(board GameBoard, i, j, numRow, numCol int, b float64) Cell {
 	// 左上角
-	numRows := CountRows(board)
-	numCols := CountCols(board)
-	replaceBoard := InitializeBoard(numRows, numCols)
-
 	if i == 0 && j == 0 {
 		// 这里的center还是右这样的问题
 		center := board[i][j]
@@ -57,14 +48,6 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64, strat
 		southeast := board[i+1][j+1]
 		south := board[i+1][j]
 		neighbors := []Cell{east, southeast, south}
-		if !strategyReplace {
-			board[i][j] = ValueCalCell(center, neighbors, b)
-			return board[i][j]
-
-		} else {
-			replaceBoard[i][j].strategy = FindMaxNbr(neighbors)
-			return replaceBoard[i][j]
-		}
 
 	}
 
@@ -77,13 +60,6 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64, strat
 		southwest := board[i+1][j-1]
 		west := board[i][j-1]
 		neighbors := []Cell{east, southeast, south, southwest, west}
-		if !strategyReplace {
-			board[i][j] = ValueCalCell(center, neighbors, b)
-			return board[i][j]
-		} else {
-			replaceBoard[i][j].strategy = FindMaxNbr(neighbors)
-			return replaceBoard[i][j]
-		}
 	}
 
 	// 下边行
@@ -97,14 +73,6 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64, strat
 		west := board[i][j-1]
 
 		neighbors := []Cell{northwest, north, northeast, east, west}
-		if !strategyReplace {
-			board[i][j] = ValueCalCell(center, neighbors, b)
-			return board[i][j]
-
-		} else {
-			replaceBoard[i][j].strategy = FindMaxNbr(neighbors)
-			return replaceBoard[i][j]
-		}
 	}
 
 	// 左边行 j <0 是固定的
@@ -117,14 +85,6 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64, strat
 		south := board[i+1][j]
 
 		neighbors := []Cell{north, northeast, east, southeast, south}
-		if !strategyReplace {
-			board[i][j] = ValueCalCell(center, neighbors, b)
-			return board[i][j]
-
-		} else {
-			replaceBoard[i][j].strategy = FindMaxNbr(neighbors)
-			return replaceBoard[i][j]
-		}
 	}
 
 	// 右边行
@@ -137,14 +97,6 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64, strat
 		west := board[i][j-1]
 
 		neighbors := []Cell{northwest, north, south, southwest, west}
-		if !strategyReplace {
-			board[i][j] = ValueCalCell(center, neighbors, b)
-			return board[i][j]
-
-		} else {
-			replaceBoard[i][j].strategy = FindMaxNbr(neighbors)
-			return replaceBoard[i][j]
-		}
 	}
 
 	// 右下角
@@ -154,14 +106,6 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64, strat
 		north := board[i-1][j]
 		west := board[i][j-1]
 		neighbors := []Cell{northwest, north, west}
-		if !strategyReplace {
-			board[i][j] = ValueCalCell(center, neighbors, b)
-			return board[i][j]
-
-		} else {
-			replaceBoard[i][j].strategy = FindMaxNbr(neighbors)
-			return replaceBoard[i][j]
-		}
 
 	}
 
@@ -172,14 +116,6 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64, strat
 		southwest := board[i+1][j-1]
 		west := board[i][j-1]
 		neighbors := []Cell{south, southwest, west}
-		if !strategyReplace {
-			board[i][j] = ValueCalCell(center, neighbors, b)
-			return board[i][j]
-
-		} else {
-			replaceBoard[i][j].strategy = FindMaxNbr(neighbors)
-			return replaceBoard[i][j]
-		}
 	}
 
 	// 左下角
@@ -189,19 +125,10 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64, strat
 		northeast := board[i-1][j+1]
 		east := board[i][j+1]
 		neighbors := []Cell{north, northeast, east}
-		if !strategyReplace {
-			board[i][j] = ValueCalCell(center, neighbors, b)
-			return board[i][j]
-
-		} else {
-			replaceBoard[i][j].strategy = FindMaxNbr(neighbors)
-			return replaceBoard[i][j]
-		}
 	}
 
 	// 中心neighbor
 	if i > 0 && i < numRow-1 && j > 0 && j < numCol-1 {
-
 		center := board[i][j]
 		northwest := board[i-1][j-1]
 		north := board[i-1][j]
@@ -213,19 +140,122 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64, strat
 		west := board[i][j-1]
 
 		neighbors := []Cell{northwest, north, northeast, east, southeast, south, southwest, west}
-		if i == 5 {
-			fmt.Println("我们到第六行了")
-			fmt.Println(neighbors)
-		}
-		if !strategyReplace {
-			board[i][j] = ValueCalCell(center, neighbors, b)
-			return board[i][j]
-
-		} else {
-			replaceBoard[i][j].strategy = FindMaxNbr(neighbors)
-			return replaceBoard[i][j]
-		}
 	}
+
+	return board[i][j]
+}
+func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell {
+	// 左上角
+	if i == 0 && j == 0 {
+		// 这里的center还是右这样的问题
+		center := board[i][j]
+		east := board[i][j+1]
+		southeast := board[i+1][j+1]
+		south := board[i+1][j]
+		neighbors := []Cell{east, southeast, south}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+
+	}
+
+	// 上边行 i=-1, j 属于 【0,numCol]
+	if i == 0 && j > 0 && j < numCol-1 {
+		center := board[i][j]
+		east := board[i][j+1]
+		southeast := board[i+1][j+1]
+		south := board[i+1][j]
+		southwest := board[i+1][j-1]
+		west := board[i][j-1]
+		neighbors := []Cell{east, southeast, south, southwest, west}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+	}
+
+	// 下边行
+	if i == numRow-1 && j > 0 && j < numCol-1 {
+
+		center := board[i][j]
+		northwest := board[i-1][j-1]
+		north := board[i-1][j]
+		northeast := board[i-1][j+1]
+		east := board[i][j+1]
+		west := board[i][j-1]
+
+		neighbors := []Cell{northwest, north, northeast, east, west}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+	}
+
+	// 左边行 j <0 是固定的
+	if i > 0 && i < numRow-1 && j == 0 {
+		center := board[i][j]
+		north := board[i-1][j]
+		northeast := board[i-1][j+1]
+		east := board[i][j+1]
+		southeast := board[i+1][j+1]
+		south := board[i+1][j]
+
+		neighbors := []Cell{north, northeast, east, southeast, south}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+	}
+
+	// 右边行
+	if i > 0 && i < numRow-1 && j == numRow-1 {
+		center := board[i][j]
+		northwest := board[i-1][j-1]
+		north := board[i-1][j]
+		south := board[i+1][j]
+		southwest := board[i+1][j-1]
+		west := board[i][j-1]
+
+		neighbors := []Cell{northwest, north, south, southwest, west}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+	}
+
+	// 右下角
+	if i == numRow-1 && j == numCol-1 {
+		center := board[i][j]
+		northwest := board[i-1][j-1]
+		north := board[i-1][j]
+		west := board[i][j-1]
+		neighbors := []Cell{northwest, north, west}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+
+	}
+
+	// 右上角
+	if i == 0 && j == numCol-1 {
+		center := board[i][j]
+		south := board[i+1][j]
+		southwest := board[i+1][j-1]
+		west := board[i][j-1]
+		neighbors := []Cell{south, southwest, west}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+	}
+
+	// 左下角
+	if i == numRow-1 && j == 0 {
+		center := board[i][j]
+		north := board[i-1][j]
+		northeast := board[i-1][j+1]
+		east := board[i][j+1]
+		neighbors := []Cell{north, northeast, east}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+	}
+
+	// 中心neighbor
+	if i > 0 && i < numRow-1 && j > 0 && j < numCol-1 {
+		center := board[i][j]
+		northwest := board[i-1][j-1]
+		north := board[i-1][j]
+		northeast := board[i-1][j+1]
+		east := board[i][j+1]
+		southeast := board[i+1][j+1]
+		south := board[i+1][j]
+		southwest := board[i+1][j-1]
+		west := board[i][j-1]
+
+		neighbors := []Cell{northwest, north, northeast, east, southeast, south, southwest, west}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+	}
+
 	return board[i][j]
 }
 
