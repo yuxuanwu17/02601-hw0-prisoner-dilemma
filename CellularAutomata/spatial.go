@@ -23,11 +23,13 @@ func main() {
 	//fmt.Println(initialBoard)  // 这里的strategy 和 value都可以显示出来
 
 	updateOnce := PlaySpatialGames(initialBoard, 1, 3)
+	//fmt.Println(updateOnce)
 	fmt.Println(len(updateOnce))    //  n+1 次的循环个数
-	fmt.Println(len(updateOnce[1])) // 第一次的循环board的情况
-	//fmt.Println(updateOnce[1])
+	fmt.Println(len(updateOnce[0])) // 第一次的循环board的情况
+
 	for i := 0; i < 10; i++ {
-		fmt.Println("===========第", i, "行================")
+		fmt.Println("========================第", i+1, "行==========================")
+		//fmt.Println(updateOnce[0][i])
 		fmt.Println(updateOnce[1][i])
 	}
 
