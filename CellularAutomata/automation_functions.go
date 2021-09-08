@@ -19,9 +19,13 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 
 	// 一种思路是从0 到 nRows 进行计算，然后用if加以判断，得到新的棋盘上的值
 	//
+	//这里update 边角的值
+	//然后用currBoard进行接受
 
-	for r := 1; r < numRows-1; r++ {
-		for c := 1; c < numCols-1; c++ {
+	//currBoard = UpdateCornerCell(currBoard, numRows, numCols, b)
+
+	for r := 0; r < numRows; r++ {
+		for c := 0; c < numCols; c++ {
 			//注意这里返回的是key-val形式的{C 0}
 			newBoard[r][c] = UpdateCell(currBoard, r, c, b)
 		}
@@ -34,47 +38,150 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 //UpdateCell
 func UpdateCell(board GameBoard, r, c int, b float64) Cell {
 	// 返回四周最大的值
+	// 这里的r，c代表的
 	updatedBoard := FindMaxNbrs(board, r, c, b)
 
 	return updatedBoard
 }
 
 // 找到四周的nbrs
+// i, j, r, c 的问题可能存在
+
 func FindMaxNbrs(board GameBoard, r, c int, b float64) Cell {
+
+	// r,c 是中心的位置
 
 	// 计算其值
 	for i := r - 1; i <= r+1; i++ {
 		for j := c - 1; j <= c+1; j++ {
-			// 获得neighbor的值
-			center := board[r][c]
-			northwest := board[r-1][c-1]
-			north := board[r-1][c]
-			northeast := board[r-1][c+1]
-			east := board[r][c+1]
-			southeast := board[r+1][c+1]
-			south := board[r+1][c]
-			southwest := board[r+1][c-1]
-			west := board[r][c-1]
-
-			neighbors := []Cell{northwest, north, northeast, east, southeast, south, southwest, west}
-			board[r][c] = ValueCalCell(center, neighbors, b)
+			// 根据neighbor的情况来获得board[r][c]的值
+			board[r][c] = ObtainNeighbors(board, i, j, r, c, b)
 		}
 	}
 	return board[r][c]
 }
 
-//if i != j {
-//				// 获得board中的GameBoard的值
-//
-//				// 如国是合作C
-//				if board[i][j].strategy=="C"{
-//					//if neighbors
-//				}else{
-//
-//				}
-//}
+// i（横）,j（纵） 代表的是neighbor的位置 [-1,-1] [numCol+1,numRow+1]的情况
+// 可能会出现outOfbounds的情况
+// 关于边和行的问题，他需要考虑是否重叠的问题
+
+func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell {
+	// 左上角
+	if i < 0 && j < 0 {
+		// 这里的center还是右这样的问题
+		center := board[i][j]
+		east := board[i][j+1]
+		southeast := board[i+1][j+1]
+		south := board[i+1][j]
+		neighbors := []Cell{east, southeast, south}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+
+	}
+
+	// 上边行 i=-1, j 属于 【0,numCol]
+	if i < 0 && j > 0 && j < numCol {
+		center := board[i][j]
+		east := board[i][j+1]
+		southeast := board[i+1][j+1]
+		south := board[i+1][j]
+		southwest := board[i+1][j-1]
+		west := board[i][j-1]
+		neighbors := []Cell{east, southeast, south, southwest, west}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+	}
+
+	// 下边行
+	if i > numRow && j > 0 && j < numCol {
+
+		center := board[i][j]
+		northwest := board[i-1][j-1]
+		north := board[i-1][j]
+		northeast := board[i-1][j+1]
+		east := board[i][j+1]
+		west := board[i][j-1]
+
+		neighbors := []Cell{northwest, north, northeast, east, west}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+	}
+
+	// 左边行 j <0 是固定的
+	if i > 0 && i < numRow && j < 0 {
+		center := board[i][j]
+		north := board[i-1][j]
+		northeast := board[i-1][j+1]
+		east := board[i][j+1]
+		southeast := board[i+1][j+1]
+		south := board[i+1][j]
+
+		neighbors := []Cell{north, northeast, east, southeast, south}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+	}
+
+	// 右边行
+	if i > 0 && i < numRow && j > numRow {
+		center := board[i][j]
+		northwest := board[i-1][j-1]
+		north := board[i-1][j]
+		south := board[i+1][j]
+		southwest := board[i+1][j-1]
+		west := board[i][j-1]
+
+		neighbors := []Cell{northwest, north, south, southwest, west}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+	}
+
+	// 右下角
+	if i > numRow && j > numCol {
+		center := board[i][j]
+		northwest := board[i-1][j-1]
+		north := board[i-1][j]
+		west := board[i][j-1]
+		neighbors := []Cell{northwest, north, west}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+
+	}
+
+	// 右上角
+	if i < 0 && j > numCol {
+		center := board[i][j]
+		south := board[i+1][j]
+		southwest := board[i+1][j-1]
+		west := board[i][j-1]
+		neighbors := []Cell{south, southwest, west}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+	}
+
+	// 左下角
+	if i > numRow && j < 0 {
+		center := board[i][j]
+		north := board[i-1][j]
+		northeast := board[i-1][j+1]
+		east := board[i][j+1]
+		neighbors := []Cell{north, northeast, east}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+	}
+
+	// 中心neighbor
+	if i > 0 && j > 0 {
+		center := board[i][j]
+		northwest := board[i-1][j-1]
+		north := board[i-1][j]
+		northeast := board[i-1][j+1]
+		east := board[i][j+1]
+		southeast := board[i+1][j+1]
+		south := board[i+1][j]
+		southwest := board[i+1][j-1]
+		west := board[i][j-1]
+
+		neighbors := []Cell{northwest, north, northeast, east, southeast, south, southwest, west}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+	}
+
+	return board[i][j]
+}
 
 // 计算中心位置的值
+
 func ValueCalCell(center Cell, neighbors []Cell, b float64) Cell {
 	var totalVal float64 = 0
 
@@ -105,19 +212,6 @@ func ValueCalCell(center Cell, neighbors []Cell, b float64) Cell {
 	return center
 
 }
-
-////// InField takes a GameBoard board as well as row and col indices (i,j) and returns truer if board[i][j] is in the board and false otherwise
-//func InField(board GameBoard, i, j int) int {
-//	if i < 0 || j < 0 {
-//		return false
-//	}
-//	if i >= CountRows(board) || j >= CountCols(board) {
-//		return false
-//	}
-//
-//	return 1
-//
-//}
 
 func CountRows(board GameBoard) int {
 	return len(board)

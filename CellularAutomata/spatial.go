@@ -20,8 +20,14 @@ func main() {
 	// set the weight b
 
 	initialBoard := ReadBoardFromFile(initialBoardFile)
-	fmt.Println(initialBoard)
+	//fmt.Println(initialBoard)  // 这里的strategy 和 value都可以显示出来
 
-	updateOnce := PlaySpatialGames(initialBoard, 10, 2)
-	fmt.Println(updateOnce)
+	updateOnce := PlaySpatialGames(initialBoard, 1, 2)
+	fmt.Println(len(updateOnce))    //  n+1 次的循环个数
+	fmt.Println(len(updateOnce[1])) // 第一次的循环board的情况
+	fmt.Println(updateOnce[1])
+	fmt.Println("=========第0行============")
+	fmt.Println(updateOnce[1][0])
+	fmt.Println("=========第1行============")
+	fmt.Println(updateOnce[1][1])
 }
