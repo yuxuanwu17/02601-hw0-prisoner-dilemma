@@ -15,19 +15,20 @@ type GameBoard [][]Cell
 
 func main() {
 	fmt.Println("Prisoner paradox initialized")
-	initialBoardFile := "CellularAutomata/boards/f99.txt" // my starting GameBoard file name
+	initialBoardFile := "CellularAutomata/boards/smallfield.txt" // my starting GameBoard file name
 
 	// set the weight b
 
 	initialBoard := ReadBoardFromFile(initialBoardFile)
 	//fmt.Println(initialBoard)  // 这里的strategy 和 value都可以显示出来
 
-	updateOnce := PlaySpatialGames(initialBoard, 1, 2)
+	updateOnce := PlaySpatialGames(initialBoard, 1, 3)
 	fmt.Println(len(updateOnce))    //  n+1 次的循环个数
 	fmt.Println(len(updateOnce[1])) // 第一次的循环board的情况
-	fmt.Println(updateOnce[1])
-	fmt.Println("=========第0行============")
-	fmt.Println(updateOnce[1][0])
-	fmt.Println("=========第1行============")
-	fmt.Println(updateOnce[1][1])
+	//fmt.Println(updateOnce[1])
+	for i := 0; i < 10; i++ {
+		fmt.Println("===========第", i, "行================")
+		fmt.Println(updateOnce[1][i])
+	}
+
 }

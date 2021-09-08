@@ -27,7 +27,7 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 	for r := 0; r < numRows; r++ {
 		for c := 0; c < numCols; c++ {
 			//注意这里返回的是key-val形式的{C 0}
-			newBoard[r][c] = UpdateCell(currBoard, r, c, b)
+			newBoard[r][c] = UpdateCell(currBoard, r, c, numRows, numCols, b)
 		}
 	}
 
@@ -36,10 +36,10 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 }
 
 //UpdateCell
-func UpdateCell(board GameBoard, r, c int, b float64) Cell {
+func UpdateCell(board GameBoard, r, c, numRow, numCol int, b float64) Cell {
 	// 返回四周最大的值
 	// 这里的r，c代表的
-	updatedBoard := FindMaxNbrs(board, r, c, b)
+	updatedBoard := FindMaxNbrs(board, r, c, numRow, numCol, b)
 
 	return updatedBoard
 }
@@ -47,27 +47,23 @@ func UpdateCell(board GameBoard, r, c int, b float64) Cell {
 // 找到四周的nbrs
 // i, j, r, c 的问题可能存在
 
-func FindMaxNbrs(board GameBoard, r, c int, b float64) Cell {
+func FindMaxNbrs(board GameBoard, r, c, numRow, numCol int, b float64) Cell {
 
 	// r,c 是中心的位置
 
 	// 计算其值
-	for i := r - 1; i <= r+1; i++ {
-		for j := c - 1; j <= c+1; j++ {
-			// 根据neighbor的情况来获得board[r][c]的值
-			board[r][c] = ObtainNeighbors(board, i, j, r, c, b)
-		}
-	}
+	// 根据neighbor的情况来获得board[r][c]的值
+	board[r][c] = ObtainNeighbors(board, r, c, numRow, numCol, b)
 	return board[r][c]
 }
 
-// i（横）,j（纵） 代表的是neighbor的位置 [-1,-1] [numCol+1,numRow+1]的情况
+// i（横）,j（纵） 代表的是neighbor的位置 [0,0] [numCol,numRow]的情况
 // 可能会出现outOfbounds的情况
 // 关于边和行的问题，他需要考虑是否重叠的问题
 
 func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell {
 	// 左上角
-	if i < 0 && j < 0 {
+	if i == 0 && j == 0 {
 		// 这里的center还是右这样的问题
 		center := board[i][j]
 		east := board[i][j+1]
@@ -79,7 +75,7 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell 
 	}
 
 	// 上边行 i=-1, j 属于 【0,numCol]
-	if i < 0 && j > 0 && j < numCol {
+	if i == 0 && j > 0 && j < numCol-1 {
 		center := board[i][j]
 		east := board[i][j+1]
 		southeast := board[i+1][j+1]
@@ -91,7 +87,7 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell 
 	}
 
 	// 下边行
-	if i > numRow && j > 0 && j < numCol {
+	if i == numRow-1 && j > 0 && j < numCol-1 {
 
 		center := board[i][j]
 		northwest := board[i-1][j-1]
@@ -105,7 +101,7 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell 
 	}
 
 	// 左边行 j <0 是固定的
-	if i > 0 && i < numRow && j < 0 {
+	if i > 0 && i < numRow-1 && j == 0 {
 		center := board[i][j]
 		north := board[i-1][j]
 		northeast := board[i-1][j+1]
@@ -118,7 +114,7 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell 
 	}
 
 	// 右边行
-	if i > 0 && i < numRow && j > numRow {
+	if i > 0 && i < numRow-1 && j == numRow-1 {
 		center := board[i][j]
 		northwest := board[i-1][j-1]
 		north := board[i-1][j]
@@ -131,7 +127,7 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell 
 	}
 
 	// 右下角
-	if i > numRow && j > numCol {
+	if i == numRow-1 && j == numCol-1 {
 		center := board[i][j]
 		northwest := board[i-1][j-1]
 		north := board[i-1][j]
@@ -142,7 +138,7 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell 
 	}
 
 	// 右上角
-	if i < 0 && j > numCol {
+	if i == 0 && j == numCol-1 {
 		center := board[i][j]
 		south := board[i+1][j]
 		southwest := board[i+1][j-1]
@@ -152,7 +148,7 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell 
 	}
 
 	// 左下角
-	if i > numRow && j < 0 {
+	if i == numRow-1 && j == 0 {
 		center := board[i][j]
 		north := board[i-1][j]
 		northeast := board[i-1][j+1]
@@ -162,7 +158,7 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell 
 	}
 
 	// 中心neighbor
-	if i > 0 && j > 0 {
+	if i > 0 && i < numRow-1 && j > 0 && j < numCol-1 {
 		center := board[i][j]
 		northwest := board[i-1][j-1]
 		north := board[i-1][j]
@@ -238,5 +234,3 @@ func InitializeBoard(numRows, numCols int) GameBoard {
 	}
 	return board
 }
-
-//关于如何update四周的问题
