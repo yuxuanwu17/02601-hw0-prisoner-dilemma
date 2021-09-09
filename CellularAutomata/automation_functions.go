@@ -24,22 +24,24 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 	}
 
 	// 这里需要发生替换的操作
-	newStrategyBoard := newBoard
+	newStrategyBoard := InitializeBoard(numRows, numCols)
 	// 遍历整个数组
 
-	//
+	// 现在的核心问题就是如何将其固定住，不要update在新的棋盘上
 	for r := 0; r < numRows; r++ {
 		for c := 0; c < numCols; c++ {
-			newStrategyBoard[r][c] = StrateyReplaceByNbrs(newStrategyBoard, r, c, numRows, numCols, b)
+			newStrategyBoard[r][c] = StrateyReplaceByNbrs(newBoard, r, c, numRows, numCols, b)
 		}
 	}
 
 	return newStrategyBoard
 }
 
-// i（横）,j（纵） 代表的是neighbor的位置 [0,0] [numCol,numRow]的情况
-// 关于边和行的问题，他需要考虑是否重叠的问题
 func StrateyReplaceByNbrs(board GameBoard, i, j, numRow, numCol int, b float64) Cell {
+	numRows := CountRows(board)
+	numCols := CountCols(board)
+	newBoard := InitializeBoard(numRows, numCols)
+
 	// 左上角
 	if i == 0 && j == 0 {
 		// 这里的center还是右这样的问题
@@ -47,7 +49,8 @@ func StrateyReplaceByNbrs(board GameBoard, i, j, numRow, numCol int, b float64) 
 		east := board[i][j+1]
 		southeast := board[i+1][j+1]
 		south := board[i+1][j]
-		neighbors := []Cell{east, southeast, south}
+		neighbors := []Cell{east, southeast, south, center}
+		newBoard[i][j] = FindMaxNbr(neighbors)
 
 	}
 
@@ -59,7 +62,9 @@ func StrateyReplaceByNbrs(board GameBoard, i, j, numRow, numCol int, b float64) 
 		south := board[i+1][j]
 		southwest := board[i+1][j-1]
 		west := board[i][j-1]
-		neighbors := []Cell{east, southeast, south, southwest, west}
+		neighbors := []Cell{east, southeast, south, southwest, west, center}
+		newBoard[i][j] = FindMaxNbr(neighbors)
+
 	}
 
 	// 下边行
@@ -72,7 +77,9 @@ func StrateyReplaceByNbrs(board GameBoard, i, j, numRow, numCol int, b float64) 
 		east := board[i][j+1]
 		west := board[i][j-1]
 
-		neighbors := []Cell{northwest, north, northeast, east, west}
+		neighbors := []Cell{northwest, north, northeast, east, west, center}
+		newBoard[i][j] = FindMaxNbr(neighbors)
+
 	}
 
 	// 左边行 j <0 是固定的
@@ -84,7 +91,9 @@ func StrateyReplaceByNbrs(board GameBoard, i, j, numRow, numCol int, b float64) 
 		southeast := board[i+1][j+1]
 		south := board[i+1][j]
 
-		neighbors := []Cell{north, northeast, east, southeast, south}
+		neighbors := []Cell{north, northeast, east, southeast, south, center}
+		newBoard[i][j] = FindMaxNbr(neighbors)
+
 	}
 
 	// 右边行
@@ -96,7 +105,9 @@ func StrateyReplaceByNbrs(board GameBoard, i, j, numRow, numCol int, b float64) 
 		southwest := board[i+1][j-1]
 		west := board[i][j-1]
 
-		neighbors := []Cell{northwest, north, south, southwest, west}
+		neighbors := []Cell{northwest, north, south, southwest, west, center}
+		newBoard[i][j] = FindMaxNbr(neighbors)
+
 	}
 
 	// 右下角
@@ -105,7 +116,8 @@ func StrateyReplaceByNbrs(board GameBoard, i, j, numRow, numCol int, b float64) 
 		northwest := board[i-1][j-1]
 		north := board[i-1][j]
 		west := board[i][j-1]
-		neighbors := []Cell{northwest, north, west}
+		neighbors := []Cell{northwest, north, west, center}
+		newBoard[i][j] = FindMaxNbr(neighbors)
 
 	}
 
@@ -115,7 +127,9 @@ func StrateyReplaceByNbrs(board GameBoard, i, j, numRow, numCol int, b float64) 
 		south := board[i+1][j]
 		southwest := board[i+1][j-1]
 		west := board[i][j-1]
-		neighbors := []Cell{south, southwest, west}
+		neighbors := []Cell{south, southwest, west, center}
+		newBoard[i][j] = FindMaxNbr(neighbors)
+
 	}
 
 	// 左下角
@@ -124,7 +138,9 @@ func StrateyReplaceByNbrs(board GameBoard, i, j, numRow, numCol int, b float64) 
 		north := board[i-1][j]
 		northeast := board[i-1][j+1]
 		east := board[i][j+1]
-		neighbors := []Cell{north, northeast, east}
+		neighbors := []Cell{north, northeast, east, center}
+		newBoard[i][j] = FindMaxNbr(neighbors)
+
 	}
 
 	// 中心neighbor
@@ -139,10 +155,12 @@ func StrateyReplaceByNbrs(board GameBoard, i, j, numRow, numCol int, b float64) 
 		southwest := board[i+1][j-1]
 		west := board[i][j-1]
 
-		neighbors := []Cell{northwest, north, northeast, east, southeast, south, southwest, west}
+		neighbors := []Cell{northwest, north, northeast, east, southeast, south, southwest, west, center}
+		updateCell := FindMaxNbr(neighbors)
+		newBoard[i][j] = updateCell
 	}
 
-	return board[i][j]
+	return newBoard[i][j]
 }
 func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell {
 	// 左上角
@@ -260,15 +278,15 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell 
 }
 
 // 计算中心位置的值
-func FindMaxNbr(neighbors []Cell) string {
+func FindMaxNbr(neighbors []Cell) Cell {
 	tempMax := Cell{strategy: "", score: 0.0}
 	for _, neighbor := range neighbors {
 		if neighbor.score > tempMax.score {
 			tempMax = neighbor
 		}
 	}
-	//tempMax.score = 0.0
-	return tempMax.strategy
+	tempMax.score = 0.0
+	return tempMax
 
 }
 func ValueCalCell(center Cell, neighbors []Cell, b float64) Cell {
