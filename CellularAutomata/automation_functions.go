@@ -16,19 +16,18 @@ func PlaySpatialGames(initialBoard GameBoard, numGens int, b float64) []GameBoar
 
 		fmt.Println("在update 函数之前")
 		fmt.Println("=====之前一个的情况boards[", i-1, "]的情况，是UpdateBoard的输入========= ")
-		for j := 0; j < 10; j++ {
-			fmt.Println(boards[i-1][j]) // 第一次的循环board的情况
-		}
+		//for j := 0; j < 10; j++ {
+		//	fmt.Println(boards[i-1][j]) // 第一次的循环board的情况
+		//}
 		boards[i] = UpdateBoard(boards[i-1], b)
 		//for i := 0; i < numGen; i++ {
 		//	fmt.Println("================第", i+1, "次循环===================") // 第一次的循环board的情况
 
 		//}
-
-		fmt.Println("=====之前update 之后的 oards[", i-1, "]的情况，是UpdateBoard的输入========= ")
-		for j := 0; j < 10; j++ {
-			fmt.Println(boards[i-1][j]) // 第一次的循环board的情况
-		}
+		fmt.Println("在update 函数之后")
+		//for j := 0; j < 10; j++ {
+		//	fmt.Println(boards[i-1][j]) // 第一次的循环board的情况
+		//}
 	}
 	return boards
 }

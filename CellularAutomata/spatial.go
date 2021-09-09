@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	//"gifhelper"
+	"gifhelper"
 )
 
 // The data stored in a single cell of a field
@@ -17,15 +17,15 @@ type GameBoard [][]Cell
 func main() {
 	fmt.Println("Prisoner paradox initialized")
 	initialBoardFile := "CellularAutomata/boards/smallfield.txt" // my starting GameBoard file name
-	//outputFileDir := "CellularAutomata/output/test.gif"
+	outputFileDir := "CellularAutomata/output/test.gif"
 	// set the weight b
-	b := 3.0
+	b := 2.0
 
 	// set the number of generation
-	numGen := 3
+	numGen := 100
 
 	// set the cell width
-	//cellWidth:=5
+	cellWidth := 5
 
 	initialBoard := ReadBoardFromFile(initialBoardFile)
 	//fmt.Println(initialBoard)  // 这里的strategy 和 value都可以显示出来
@@ -38,17 +38,17 @@ func main() {
 	//	fmt.Println(boards[i])
 	//	fmt.Println("==============")
 	//}
-	//
-	//for i := 0; i < numGen; i++ {
+
+	//for i := 0; i <= numGen; i++ {
 	//	fmt.Println("================第", i+1, "次循环===================") // 第一次的循环board的情况
 	//	for j := 0; j < 10; j++ {
 	//		fmt.Println(boards[i][j]) // 第一次的循环board的情况
 	//	}
 	//}
 
-	//imglist := DrawGameBoards(boards, cellWidth)
-	//fmt.Println(imglist)
-	//
-	//gifhelper.ImagesToGIF(imglist, outputFileDir)
+	imglist := DrawGameBoards(boards, cellWidth)
+	fmt.Println(imglist)
+
+	gifhelper.ImagesToGIF(imglist, outputFileDir)
 
 }
