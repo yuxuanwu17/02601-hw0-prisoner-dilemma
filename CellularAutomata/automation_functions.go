@@ -1,13 +1,25 @@
 package main
 
+import "fmt"
+
 func PlaySpatialGames(initialBoard GameBoard, numGens int, b float64) []GameBoard {
 	boards := make([]GameBoard, numGens+1)
 	boards[0] = initialBoard
+	fmt.Println("boards[0]的情况")
+	fmt.Println(boards[0])
 
+	var tempVar GameBoard
 	for i := 1; i <= numGens; i++ {
+		tempVar = boards[i-1]
 		boards[i] = UpdateBoard(boards[i-1], b)
-	}
+		boards[i-1] = tempVar
+		fmt.Println(i)
+		fmt.Println("=====正在被update的情况,储存在了boards[i]=========")
+		fmt.Println(boards[i])
+		fmt.Println("=====之前一个的情况=========")
+		fmt.Println(boards[i-1])
 
+	}
 	return boards
 }
 
@@ -33,7 +45,6 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 			newStrategyBoard[r][c] = StrateyReplaceByNbrs(newBoard, r, c, numRows, numCols, b)
 		}
 	}
-
 	return newStrategyBoard
 }
 
@@ -162,6 +173,7 @@ func StrateyReplaceByNbrs(board GameBoard, i, j, numRow, numCol int, b float64) 
 
 	return newBoard[i][j]
 }
+
 func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell {
 	// 左上角
 	if i == 0 && j == 0 {
@@ -289,6 +301,7 @@ func FindMaxNbr(neighbors []Cell) Cell {
 	return tempMax
 
 }
+
 func ValueCalCell(center Cell, neighbors []Cell, b float64) Cell {
 	var totalVal float64 = 0
 

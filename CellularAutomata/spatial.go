@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	//"gifhelper"
 )
 
 // The data stored in a single cell of a field
@@ -16,21 +17,39 @@ type GameBoard [][]Cell
 func main() {
 	fmt.Println("Prisoner paradox initialized")
 	initialBoardFile := "CellularAutomata/boards/smallfield.txt" // my starting GameBoard file name
-
+	//outputFileDir := "CellularAutomata/output/test.gif"
 	// set the weight b
+	b := 3.0
+
+	// set the number of generation
+	numGen := 10
+
+	// set the cell width
+	//cellWidth:=5
 
 	initialBoard := ReadBoardFromFile(initialBoardFile)
 	//fmt.Println(initialBoard)  // 这里的strategy 和 value都可以显示出来
 
-	updateOnce := PlaySpatialGames(initialBoard, 1, 3)
+	boards := PlaySpatialGames(initialBoard, numGen, b)
 	//fmt.Println(updateOnce)
-	fmt.Println(len(updateOnce))    //  n+1 次的循环个数
-	fmt.Println(len(updateOnce[0])) // 第一次的循环board的情况
+	fmt.Println(len(boards)) //  n+1 次的循环个数
 
-	for i := 0; i < 10; i++ {
-		fmt.Println("========================第", i+1, "行==========================")
-		//fmt.Println(updateOnce[0][i])
-		fmt.Println(updateOnce[1][i])
-	}
+	//for i := 1; i <= numGen; i++ {
+	//	fmt.Println(boards[i])
+	//	fmt.Println("==============")
+	//}
+
+	//for i := 0; i < numGen; i++ {
+	//	fmt.Println("================第", i+1, "次===================") // 第一次的循环board的情况
+	//	fmt.Println(len(boards[i]))
+	//	for j := 0; j < 10; j++ {
+	//		fmt.Println(boards[i][j]) // 第一次的循环board的情况
+	//	}
+	//}
+
+	//imglist := DrawGameBoards(boards, cellWidth)
+	//fmt.Println(imglist)
+	//
+	//gifhelper.ImagesToGIF(imglist, outputFileDir)
 
 }
