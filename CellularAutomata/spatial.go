@@ -38,10 +38,9 @@ func main() {
 	//	fmt.Println(boards[i])
 	//	fmt.Println("==============")
 	//}
-
+	//
 	//for i := 0; i < numGen; i++ {
-	//	fmt.Println("================第", i+1, "次===================") // 第一次的循环board的情况
-	//	fmt.Println(len(boards[i]))
+	//	fmt.Println("================第", i+1, "次循环===================") // 第一次的循环board的情况
 	//	for j := 0; j < 10; j++ {
 	//		fmt.Println(boards[i][j]) // 第一次的循环board的情况
 	//	}
