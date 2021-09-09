@@ -5,19 +5,18 @@ import "fmt"
 func PlaySpatialGames(initialBoard GameBoard, numGens int, b float64) []GameBoard {
 	boards := make([]GameBoard, numGens+1)
 	boards[0] = initialBoard
-	fmt.Println("boards[0]的情况")
-	fmt.Println(boards[0])
 
 	var tempVar GameBoard
 	for i := 1; i <= numGens; i++ {
 		tempVar = boards[i-1]
 		boards[i] = UpdateBoard(boards[i-1], b)
 		boards[i-1] = tempVar
+		fmt.Println()
 		fmt.Println(i)
-		fmt.Println("=====正在被update的情况,储存在了boards[i]=========")
-		fmt.Println(boards[i])
 		fmt.Println("=====之前一个的情况=========")
 		fmt.Println(boards[i-1])
+		fmt.Println("=====正在被update的情况,储存在了boards[i]=========")
+		fmt.Println(boards[i])
 
 	}
 	return boards
@@ -34,6 +33,11 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 			newBoard[r][c] = ObtainNeighbors(currBoard, r, c, numRows, numCols, b)
 		}
 	}
+
+	// 获得的是neighbor的值，还没有作出决策
+	fmt.Println()
+	fmt.Println("获得的是neighbor的值，还没有作出决策~~~~~~~~~~~~~~~~")
+	fmt.Println(newBoard)
 
 	// 这里需要发生替换的操作
 	newStrategyBoard := InitializeBoard(numRows, numCols)

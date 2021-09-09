@@ -22,7 +22,7 @@ func main() {
 	b := 3.0
 
 	// set the number of generation
-	numGen := 10
+	numGen := 3
 
 	// set the cell width
 	//cellWidth:=5
