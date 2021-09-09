@@ -1,33 +1,10 @@
 package main
 
-import "fmt"
-
 func PlaySpatialGames(initialBoard GameBoard, numGens int, b float64) []GameBoard {
 	boards := make([]GameBoard, numGens+1)
 	boards[0] = initialBoard
-
-	// ======================================
-	// 问题的核心就是为什么我的initialBoard会变
-	// 因为当第一个update完成后，他的board[0]就会变成一个固定的值，以及对应的initialBoard,可以在main函数里发现
-	// 然后他每一次update前的时间都是固定的
-	// ======================================
-
 	for i := 1; i <= numGens; i++ {
-
-		fmt.Println("在update 函数之前")
-		fmt.Println("=====之前一个的情况boards[", i-1, "]的情况，是UpdateBoard的输入========= ")
-		//for j := 0; j < 10; j++ {
-		//	fmt.Println(boards[i-1][j]) // 第一次的循环board的情况
-		//}
 		boards[i] = UpdateBoard(boards[i-1], b)
-		//for i := 0; i < numGen; i++ {
-		//	fmt.Println("================第", i+1, "次循环===================") // 第一次的循环board的情况
-
-		//}
-		fmt.Println("在update 函数之后")
-		//for j := 0; j < 10; j++ {
-		//	fmt.Println(boards[i-1][j]) // 第一次的循环board的情况
-		//}
 	}
 	return boards
 }
@@ -41,31 +18,17 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 		for c := 0; c < numCols; c++ {
 			//注意这里返回的是key-val形式的{C 0}
 			newBoard[r][c] = ObtainNeighbors(currBoard, r, c, numRows, numCols, b)
-			if r == 4 && c == 3 {
-				newBoard[r][c] = ObtainNeighbors(currBoard, r, c, numRows, numCols, b)
-			}
 		}
 	}
 
-	// 获得的是neighbor的值，还没有作出决策
-	//fmt.Println()
-	//fmt.Println("获得的是neighbor的值，还没有作出决策~~~~~~~~~~~~~~~~")
-	//fmt.Println(newBoard)
-
-	// 这里需要发生替换的操作
 	newStrategyBoard := InitializeBoard(numRows, numCols)
-	// 遍历整个数组
-	//fmt.Println(newStrategyBoard)
 
-	// 现在的核心问题就是如何将其固定住，不要update在新的棋盘上
 	for r := 0; r < numRows; r++ {
 		for c := 0; c < numCols; c++ {
 			newStrategyBoard[r][c] = StrateyReplaceByNbrs(newBoard, r, c, numRows, numCols, b)
 		}
 	}
 
-	//fmt.Println(newStrategyBoard)
-	//fmt.Println()
 	return newStrategyBoard
 }
 
@@ -314,9 +277,8 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell 
 	return board[i][j]
 }
 
-// 计算中心位置的值
 func FindMaxNbr(neighbors []Cell) Cell {
-	tempMax := Cell{strategy: "", score: 0.0}
+	tempMax := Cell{strategy: "D", score: 0.0}
 	for _, neighbor := range neighbors {
 		if neighbor.score > tempMax.score {
 			tempMax = neighbor
