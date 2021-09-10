@@ -23,19 +23,6 @@ func DrawGameBoard(board GameBoard, cellWidth int) image.Image {
 	blue := MakeColor(0, 0, 255)
 	red := MakeColor(255, 0, 0)
 
-	/*
-		//set the entire board as black
-		c.SetFillColor(gray)
-		c.ClearRect(0, 0, height, width)
-		c.Clear()
-	*/
-
-	/*
-		// draw the grid lines in white
-		c.SetStrokeColor(white)
-		DrawGridLines(c, cellWidth)
-	*/
-
 	// fill in colored squares
 	for i := range board {
 		for j := range board[i] {

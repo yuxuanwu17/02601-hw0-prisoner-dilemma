@@ -174,6 +174,36 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell 
 
 		board[i][j] = ValueCalCell(center, neighbors, b)
 	}
+	// 右下角
+	if i == numRow-1 && j == numCol-1 {
+		center := board[i][j]
+		northwest := board[i-1][j-1]
+		north := board[i-1][j]
+		west := board[i][j-1]
+		neighbors := []Cell{northwest, north, west}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+
+	}
+
+	// 右上角
+	if i == 0 && j == numCol-1 {
+		center := board[i][j]
+		south := board[i+1][j]
+		southwest := board[i+1][j-1]
+		west := board[i][j-1]
+		neighbors := []Cell{south, southwest, west}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+	}
+
+	// 左下角
+	if i == numRow-1 && j == 0 {
+		center := board[i][j]
+		north := board[i-1][j]
+		northeast := board[i-1][j+1]
+		east := board[i][j+1]
+		neighbors := []Cell{north, northeast, east}
+		board[i][j] = ValueCalCell(center, neighbors, b)
+	}
 
 	// 上边行 i=-1, j 属于 【0,numCol]
 	if i == 0 && j > 0 && j < numCol-1 {
@@ -227,37 +257,6 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell 
 		board[i][j] = ValueCalCell(center, neighbors, b)
 	}
 
-	// 右下角
-	if i == numRow-1 && j == numCol-1 {
-		center := board[i][j]
-		northwest := board[i-1][j-1]
-		north := board[i-1][j]
-		west := board[i][j-1]
-		neighbors := []Cell{northwest, north, west}
-		board[i][j] = ValueCalCell(center, neighbors, b)
-
-	}
-
-	// 右上角
-	if i == 0 && j == numCol-1 {
-		center := board[i][j]
-		south := board[i+1][j]
-		southwest := board[i+1][j-1]
-		west := board[i][j-1]
-		neighbors := []Cell{south, southwest, west}
-		board[i][j] = ValueCalCell(center, neighbors, b)
-	}
-
-	// 左下角
-	if i == numRow-1 && j == 0 {
-		center := board[i][j]
-		north := board[i-1][j]
-		northeast := board[i-1][j+1]
-		east := board[i][j+1]
-		neighbors := []Cell{north, northeast, east}
-		board[i][j] = ValueCalCell(center, neighbors, b)
-	}
-
 	// 中心neighbor
 	if i > 0 && i < numRow-1 && j > 0 && j < numCol-1 {
 		center := board[i][j]
@@ -278,9 +277,9 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell 
 }
 
 func FindMaxNbr(neighbors []Cell) Cell {
-	tempMax := Cell{strategy: "D", score: 0.0}
+	tempMax := Cell{strategy: "", score: 0.0}
 	for _, neighbor := range neighbors {
-		if neighbor.score > tempMax.score {
+		if neighbor.score >= tempMax.score {
 			tempMax = neighbor
 		}
 	}
