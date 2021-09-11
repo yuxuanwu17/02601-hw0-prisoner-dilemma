@@ -9,8 +9,24 @@ import (
 	"image/color/palette"
 	"image/draw"
 	"image/gif"
+	"image/png"
 	"os"
 )
+
+func ImageToPNG(finalImalge image.Image, filename string) {
+	outputFile, err := os.Create(filename + ".png")
+	if err != nil {
+		fmt.Println("Sorry: couldn't create the file!")
+		os.Exit(1)
+	}
+	defer outputFile.Close()
+
+	err = png.Encode(outputFile, finalImalge)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+}
 
 //ImagesToGIF() takes a slice of images and uses them to generate an animated GIF
 // with the name "filename.out.gif" where filename is an input parameter.
@@ -57,27 +73,27 @@ func init() {
 }
 
 func ImageToPaletted(img image.Image) *image.Paletted {
-        pm, ok := img.(*image.Paletted)
-        if !ok {
-                b := img.Bounds()
-                pm = image.NewPaletted(b, palette.WebSafe)
-                var prevC color.Color = nil
-                var idx uint8
-                var ok bool
-                for y := b.Min.Y; y < b.Max.Y; y++ {
-                        for x := b.Min.X; x < b.Max.X; x++ {
-                                c := img.At(x, y)
-                                if c != prevC {
-                                        if idx, ok = mapOfColorIndices[c]; !ok {
-                                                idx = uint8(pm.Palette.Index(c))
-                                                mapOfColorIndices[c] = idx
-                                        }
-                                        prevC = c
-                                }
-                                i := pm.PixOffset(x, y)
-                                pm.Pix[i] = idx
-                        }
-                }
-        }
-        return pm
+	pm, ok := img.(*image.Paletted)
+	if !ok {
+		b := img.Bounds()
+		pm = image.NewPaletted(b, palette.WebSafe)
+		var prevC color.Color = nil
+		var idx uint8
+		var ok bool
+		for y := b.Min.Y; y < b.Max.Y; y++ {
+			for x := b.Min.X; x < b.Max.X; x++ {
+				c := img.At(x, y)
+				if c != prevC {
+					if idx, ok = mapOfColorIndices[c]; !ok {
+						idx = uint8(pm.Palette.Index(c))
+						mapOfColorIndices[c] = idx
+					}
+					prevC = c
+				}
+				i := pm.PixOffset(x, y)
+				pm.Pix[i] = idx
+			}
+		}
+	}
+	return pm
 }
