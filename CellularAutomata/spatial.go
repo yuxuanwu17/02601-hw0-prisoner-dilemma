@@ -20,9 +20,8 @@ func main() {
 	fmt.Println("Prisoner paradox initialized")
 
 	initialBoardFile := os.Args[1]
-	//initialBoardFile := "CellularAutomata/boards/smallfield.txt" // my starting GameBoard file name
+
 	outputFileDir := os.Args[2]
-	//outputFileDir := "CellularAutomata/output/b_1.65_numGen_120.gif"
 
 	// set the weight b
 	b, err := strconv.ParseFloat(os.Args[3], 64)
@@ -46,17 +45,17 @@ func main() {
 
 	fmt.Println("Automaton played. Now, drawing images.")
 
-	//for i := 0; i <= numGen; i++ {
-	//	fmt.Println("================第", i, "次循环===================") // 第一次的循环board的情况
-	//	for j := 0; j < 10; j++ {
-	//		fmt.Println(boards[i][j]) // 第一次的循环board的情况
-	//	}
-	//}
-
 	imglist := DrawGameBoards(boards, cellWidth)
 	fmt.Println("Boards drawn to images! Now, convert to animated GIF.")
+
+	finalImage := imglist[numGen]
+
+	//fmt.Println(finalImage)
+	gifhelper.ImageToPNG(finalImage, outputFileDir)
+	fmt.Println("The final image had be drawn!")
 
 	gifhelper.ImagesToGIF(imglist, outputFileDir)
 	fmt.Println("Success! GIF produced.")
 
+	//	./CellularAutomata boards/f99.txt output/f99_165_0.gif 1.65 0
 }
