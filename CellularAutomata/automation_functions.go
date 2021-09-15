@@ -15,32 +15,32 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 
 	currBoardWithD := SurroundWithD(currBoard, numRows, numCols)
 
-	return currBoardWithD
-	//// 开始读取
-	//newBoard := InitializeBoard(numRows+1, numCols+1)
-	//for r := 1; r < numRows-1; r++ {
-	//	for c := 1; c < numCols-1; c++ {
-	//		//注意这里返回的是key-val形式的{C 0}
-	//		newBoard[r][c] = ObtainNeighbors(currBoardWithD, r, c, numRows, numCols, b)
-	//	}
-	//}
-	//
-	//newStrategyBoard := InitializeBoard(numRows+1, numCols+1)
-	//
-	//for r := 0; r < numRows+1; r++ {
-	//	for c := 0; c < numCols+1; c++ {
-	//		newStrategyBoard[r][c] = StrateyReplaceByNbrs(newBoard, r, c, numRows, numCols)
-	//	}
-	//}
-	//
-	//finalStrategyBoard := InitializeBoard(numRows, numCols)
-	//for r := 1; r < numRows+1; r++ {
-	//	for c := 1; c < numCols+1; c++ {
-	//		finalStrategyBoard[r-1][c-1] = newStrategyBoard[r][c]
-	//	}
-	//}
-	//
-	//return finalStrategyBoard
+	// 开始读取
+	newBoard := SurroundWithD(currBoard, numRows, numCols)
+	for r := 1; r < numRows-1; r++ {
+		for c := 1; c < numCols-1; c++ {
+			//注意这里返回的是key-val形式的{C 0}
+			newBoard[r][c] = ObtainNeighbors(currBoardWithD, r, c, numRows, numCols, b)
+		}
+	}
+
+	return newBoard
+	newStrategyBoard := InitializeBoard(numRows+1, numCols+1)
+
+	for r := 0; r < numRows+1; r++ {
+		for c := 0; c < numCols+1; c++ {
+			newStrategyBoard[r][c] = StrateyReplaceByNbrs(newBoard, r, c, numRows, numCols)
+		}
+	}
+
+	finalStrategyBoard := InitializeBoard(numRows, numCols)
+	for r := 1; r < numRows+1; r++ {
+		for c := 1; c < numCols+1; c++ {
+			finalStrategyBoard[r-1][c-1] = newStrategyBoard[r][c]
+		}
+	}
+
+	return finalStrategyBoard
 }
 
 func SurroundWithD(currBoard GameBoard, numRows, numCols int) GameBoard {
