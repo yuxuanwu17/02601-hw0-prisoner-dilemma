@@ -24,15 +24,18 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 		}
 	}
 
-	return newBoard
-	newStrategyBoard := InitializeBoard(numRows+1, numCols+1)
+	//return newBoard
 
-	for r := 0; r < numRows+1; r++ {
-		for c := 0; c < numCols+1; c++ {
+	newStrategyBoard := SurroundWithD(currBoard, numRows, numCols)
+
+	for r := 1; r < numRows-1; r++ {
+		for c := 1; c < numCols-1; c++ {
 			newStrategyBoard[r][c] = StrateyReplaceByNbrs(newBoard, r, c, numRows, numCols)
 		}
 	}
 
+	//return newStrategyBoard
+	// 去除外层的D
 	finalStrategyBoard := InitializeBoard(numRows, numCols)
 	for r := 1; r < numRows+1; r++ {
 		for c := 1; c < numCols+1; c++ {
@@ -48,13 +51,32 @@ func SurroundWithD(currBoard GameBoard, numRows, numCols int) GameBoard {
 
 	currBoardWithD := InitializeBoard(numRows+1, numCols+1)
 
+	//for r := 0; r < numRows+1; r++ {
+	//	currBoardWithD[r][0] = Cell{strategy: "D", score: 0.0}
+	//	currBoardWithD[r][numCols] = Cell{strategy: "D", score: 0.0}
+	//}
+	//
+	//for c := 0; c < numCols+1; c++ {
+	//	currBoardWithD[0][c] = Cell{strategy: "D", score: 0.0}
+	//	currBoardWithD[numRows][c] = Cell{strategy: "D", score: 0.0}
+	//}
+	//
+	//for r := 1; r < numRows; r++ {
+	//	for c := 1; c < numCols; c++ {
+	//		currBoardWithD[r][c] =currBoard[r][c]
+	//	}
+	//}
+	//
+	//
+	//return currBoardWithD
+
 	for r := 0; r < numRows+1; r++ {
 		for c := 0; c < numCols+1; c++ {
 			if r == 0 || r == numRows || c == 0 || c == numCols {
 				currBoardWithD[r][c] = Cell{strategy: "D", score: 0.0}
 			} else {
 				//注意这里返回的是key-val形式的{C 0}
-				currBoardWithD[r][c] = currBoard[r][c]
+				currBoardWithD[r+1][c+1] = currBoard[r][c]
 			}
 		}
 	}
@@ -66,21 +88,19 @@ func StrateyReplaceByNbrs(board GameBoard, i, j, numRow, numCol int) Cell {
 	numCols := CountCols(board)
 	newBoard := InitializeBoard(numRows, numCols)
 
-	if i > 1 && i < numRow-1 && j > 1 && j < numCol-1 {
-		center := board[i][j]
-		northwest := board[i-1][j-1]
-		north := board[i-1][j]
-		northeast := board[i-1][j+1]
-		east := board[i][j+1]
-		southeast := board[i+1][j+1]
-		south := board[i+1][j]
-		southwest := board[i+1][j-1]
-		west := board[i][j-1]
+	center := board[i][j]
+	northwest := board[i-1][j-1]
+	north := board[i-1][j]
+	northeast := board[i-1][j+1]
+	east := board[i][j+1]
+	southeast := board[i+1][j+1]
+	south := board[i+1][j]
+	southwest := board[i+1][j-1]
+	west := board[i][j-1]
 
-		neighbors := []Cell{northwest, north, northeast, east, southeast, south, southwest, west, center}
-		updateCell := FindMaxNbr(neighbors)
-		newBoard[i][j] = updateCell
-	}
+	neighbors := []Cell{northwest, north, northeast, east, southeast, south, southwest, west, center}
+	updateCell := FindMaxNbr(neighbors)
+	newBoard[i][j] = updateCell
 
 	return newBoard[i][j]
 }

@@ -20,14 +20,13 @@ func main() {
 	b := 2.0
 
 	// set the number of generation
-	numGen := 3
+	numGen := 2
 
 	initialBoard := ReadBoardFromFile(initialBoardFile)
 	//fmt.Println(initialBoard)  // 这里的strategy 和 value都可以显示出来
 
 	boards := PlaySpatialGames(initialBoard, numGen, b)
 	//fmt.Println(updateOnce)
-	fmt.Println(len(boards)) //  n+1 次的循环个数
 
 	//for i := 1; i <= numGen; i++ {
 	//	fmt.Println(boards[i])
@@ -35,7 +34,7 @@ func main() {
 	//}
 
 	for i := 0; i <= numGen; i++ {
-		fmt.Println("================第", i+1, "次循环===================") // 第一次的循环board的情况
+		fmt.Println("================第", i, "次循环===================") // 第一次的循环board的情况
 		for j := 0; j < 10; j++ {
 			fmt.Println(boards[i][j]) // 第一次的循环board的情况
 		}
