@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"gifhelper"
 	"os"
 	"strconv"
 )
@@ -51,10 +50,10 @@ func main() {
 	finalImage := imglist[numGen]
 
 	//fmt.Println(finalImage)
-	gifhelper.ImageToPNG(finalImage, outputFileDir)
+	ImageToPNG(finalImage, outputFileDir)
 	fmt.Println("The final image had be drawn!")
 
-	gifhelper.ImagesToGIF(imglist, outputFileDir)
+	ImagesToGIF(imglist, outputFileDir)
 	fmt.Println("Success! GIF produced.")
 
 	//	./CellularAutomata boards/f99.txt output/f99_165_0.gif 1.65 0
