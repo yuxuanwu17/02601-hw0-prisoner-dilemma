@@ -20,17 +20,17 @@ func main() {
 
 	initialBoardFile := os.Args[1]
 
-	outputFileDir := os.Args[2]
+	outputFileDir := "Prisoners"
 
 	// set the weight b
-	b, err := strconv.ParseFloat(os.Args[3], 64)
+	b, err := strconv.ParseFloat(os.Args[2], 64)
 	if err != nil {
 		panic("Error: Problem converting cell width parameter to an integer.")
 	}
 	//b := 1.65
 
 	// set the number of generation
-	numGen, err := strconv.Atoi(os.Args[4])
+	numGen, err := strconv.Atoi(os.Args[3])
 	if err != nil {
 		panic("Error: Problem converting cell width parameter to an integer.")
 	}
