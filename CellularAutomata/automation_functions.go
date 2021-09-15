@@ -32,20 +32,140 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 	return newStrategyBoard
 }
 
+// for each single center cell, calculate the number of neighbors in C
+
 func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell {
 	count := 0
 
 	for r := i - 1; r <= i+1; r++ {
 		for c := j - 1; c <= j+1; c++ {
-			if r >= 0 && c >= 0 && r < numRow && c < numCol {
+			if r >= 0 && c >= 0 && r < numRow && c < numCol && board[r][c].strategy == "C" {
 				count++
 			}
 		}
 	}
-
-	board[i][j] = ValueCalCell(board[i][j], count, b)
+	board[i][j] = ValueCalCell(board[i][j], count-1, b)
 	return board[i][j]
 }
+
+//func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell {
+//	// 左上角
+//	if i == 0 && j == 0 {
+//		// 这里的center还是右这样的问题
+//		center := board[i][j]
+//		east := board[i][j+1]
+//		southeast := board[i+1][j+1]
+//		south := board[i+1][j]
+//		neighbors := []Cell{east, southeast, south}
+//
+//		// ========================================================
+//		// 问题出现在这里，这里每次update 都会让initialBoard也被更新
+//		// ========================================================
+//
+//		board[i][j] = ValueCalCell(center, neighbors, b)
+//	}
+//
+//	// 上边行 i=-1, j 属于 【0,numCol]
+//	if i == 0 && j > 0 && j < numCol-1 {
+//		center := board[i][j]
+//		east := board[i][j+1]
+//		southeast := board[i+1][j+1]
+//		south := board[i+1][j]
+//		southwest := board[i+1][j-1]
+//		west := board[i][j-1]
+//		neighbors := []Cell{east, southeast, south, southwest, west}
+//		board[i][j] = ValueCalCell(center, neighbors, b)
+//	}
+//
+//	// 下边行
+//	if i == numRow-1 && j > 0 && j < numCol-1 {
+//
+//		center := board[i][j]
+//		northwest := board[i-1][j-1]
+//		north := board[i-1][j]
+//		northeast := board[i-1][j+1]
+//		east := board[i][j+1]
+//		west := board[i][j-1]
+//
+//		neighbors := []Cell{northwest, north, northeast, east, west}
+//		board[i][j] = ValueCalCell(center, neighbors, b)
+//	}
+//
+//	// 左边行 j <0 是固定的
+//	if i > 0 && i < numRow-1 && j == 0 {
+//		center := board[i][j]
+//		north := board[i-1][j]
+//		northeast := board[i-1][j+1]
+//		east := board[i][j+1]
+//		southeast := board[i+1][j+1]
+//		south := board[i+1][j]
+//
+//		neighbors := []Cell{north, northeast, east, southeast, south}
+//		board[i][j] = ValueCalCell(center, neighbors, b)
+//	}
+//
+//	// 右边行
+//	if i > 0 && i < numRow-1 && j == numRow-1 {
+//		center := board[i][j]
+//		northwest := board[i-1][j-1]
+//		north := board[i-1][j]
+//		south := board[i+1][j]
+//		southwest := board[i+1][j-1]
+//		west := board[i][j-1]
+//
+//		neighbors := []Cell{northwest, north, south, southwest, west}
+//		board[i][j] = ValueCalCell(center, neighbors, b)
+//	}
+//
+//	// 右下角
+//	if i == numRow-1 && j == numCol-1 {
+//		center := board[i][j]
+//		northwest := board[i-1][j-1]
+//		north := board[i-1][j]
+//		west := board[i][j-1]
+//		neighbors := []Cell{northwest, north, west}
+//		board[i][j] = ValueCalCell(center, neighbors, b)
+//
+//	}
+//
+//	// 右上角
+//	if i == 0 && j == numCol-1 {
+//		center := board[i][j]
+//		south := board[i+1][j]
+//		southwest := board[i+1][j-1]
+//		west := board[i][j-1]
+//		neighbors := []Cell{south, southwest, west}
+//		board[i][j] = ValueCalCell(center, neighbors, b)
+//	}
+//
+//	// 左下角
+//	if i == numRow-1 && j == 0 {
+//		center := board[i][j]
+//		north := board[i-1][j]
+//		northeast := board[i-1][j+1]
+//		east := board[i][j+1]
+//		neighbors := []Cell{north, northeast, east}
+//		board[i][j] = ValueCalCell(center, neighbors, b)
+//	}
+//
+//	// 中心neighbor
+//	if i > 0 && i < numRow-1 && j > 0 && j < numCol-1 {
+//		center := board[i][j]
+//		northwest := board[i-1][j-1]
+//		north := board[i-1][j]
+//		northeast := board[i-1][j+1]
+//		east := board[i][j+1]
+//		southeast := board[i+1][j+1]
+//		south := board[i+1][j]
+//		southwest := board[i+1][j-1]
+//		west := board[i][j-1]
+//
+//		neighbors := []Cell{northwest, north, northeast, east, southeast, south, southwest, west}
+//		board[i][j] = ValueCalCell(center, neighbors, b)
+//	}
+//
+//	return board[i][j]
+//}
 
 func StrategyReplaceByNbrs(board GameBoard, i, j, numRow, numCol int, b float64) Cell {
 	numRows := CountRows(board)
@@ -179,11 +299,41 @@ func ValueCalCell(center Cell, count int, b float64) Cell {
 	if center.strategy == "C" {
 		totalVal = float64(count)
 	} else {
-		totalVal = float64(count) * b
+		totalVal = float64(count+1) * b
 	}
 	center.score = totalVal
 	return center
 }
+
+//func ValueCalCell(center Cell, neighbors []Cell, b float64) Cell {
+//	var totalVal float64 = 0
+//
+//	for _, neighbor := range neighbors {
+//		// strategy is cooperation
+//
+//		centerState := center.strategy
+//
+//		if centerState == "C" {
+//			if neighbor.strategy == centerState {
+//				totalVal = totalVal + 1
+//			} else {
+//				totalVal = totalVal + 0
+//			}
+//
+//		} else {
+//			// centerState 为 D
+//			if neighbor.strategy == centerState {
+//				totalVal = totalVal + 0
+//			} else {
+//				totalVal = totalVal + b
+//			}
+//		}
+//
+//	}
+//	center.score = totalVal
+//	return center
+//
+//}
 
 func FindMaxNbr(neighbors []Cell) Cell {
 	tempMax := Cell{strategy: "", score: 0.0}
@@ -210,8 +360,6 @@ func CountCols(board GameBoard) int {
 	return len(board[0])
 }
 
-//InitializeBoard takes a number of rows and columns as inputs and
-//returns a gameboard with appropriate number of rows and colums, where all values = 0.
 func InitializeBoard(numRows, numCols int) GameBoard {
 	// make a 2-D slice (default values = false)
 	var board GameBoard

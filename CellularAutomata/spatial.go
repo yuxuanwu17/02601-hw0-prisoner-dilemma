@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 )
 
 // The data stored in a single cell of a field
@@ -15,30 +17,44 @@ type GameBoard [][]Cell
 
 func main() {
 	fmt.Println("Prisoner paradox initialized")
-	initialBoardFile := "CellularAutomata/boards/smallfield.txt" // my starting GameBoard file name
+
+	initialBoardFile := os.Args[1]
+
+	outputFileDir := "Prisoners"
+
 	// set the weight b
-	b := 1.5
+	b, err := strconv.ParseFloat(os.Args[2], 64)
+	if err != nil {
+		panic("Error: Problem converting cell width parameter to an integer.")
+	}
+	//b := 1.65
 
 	// set the number of generation
-	numGen := 3
-
-	initialBoard := ReadBoardFromFile(initialBoardFile)
-	//fmt.Println(initialBoard)  // 这里的strategy 和 value都可以显示出来
-
-	boards := PlaySpatialGames(initialBoard, numGen, b)
-	//fmt.Println(updateOnce)
-	fmt.Println(len(boards)) //  n+1 次的循环个数
-
-	//for i := 1; i <= numGen; i++ {
-	//	fmt.Println(boards[i])
-	//	fmt.Println("==============")
-	//}
-
-	for i := 0; i <= numGen; i++ {
-		fmt.Println("================第", i+1, "次循环===================") // 第一次的循环board的情况
-		for j := 0; j < 10; j++ {
-			fmt.Println(boards[i][j]) // 第一次的循环board的情况
-		}
+	numGen, err := strconv.Atoi(os.Args[3])
+	if err != nil {
+		panic("Error: Problem converting cell width parameter to an integer.")
 	}
 
+	// set the cell width
+	cellWidth := 5
+
+	initialBoard := ReadBoardFromFile(initialBoardFile)
+
+	boards := PlaySpatialGames(initialBoard, numGen, b)
+
+	fmt.Println("Automaton played. Now, drawing images.")
+
+	imglist := DrawGameBoards(boards, cellWidth)
+	fmt.Println("Boards drawn to images! Now, convert to animated GIF.")
+
+	finalImage := imglist[numGen]
+
+	//fmt.Println(finalImage)
+	ImageToPNG(finalImage, outputFileDir)
+	fmt.Println("The final image had be drawn!")
+
+	ImagesToGIF(imglist, outputFileDir)
+	fmt.Println("Success! GIF produced.")
+
+	//	./CellularAutomata boards/f99.txt output/f99_165_0.gif 1.65 0
 }
