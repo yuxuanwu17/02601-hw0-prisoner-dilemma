@@ -20,13 +20,28 @@ func main() {
 	b := 2.0
 
 	// set the number of generation
-	numGen := 2
+	numGen := 10
 
 	initialBoard := ReadBoardFromFile(initialBoardFile)
 	//fmt.Println(initialBoard)  // 这里的strategy 和 value都可以显示出来
 
 	boards := PlaySpatialGames(initialBoard, numGen, b)
-	//fmt.Println(updateOnce)
+	//fmt.Println("===================0======================")
+	//fmt.Println(len(boards[0]))
+	////fmt.Println(len(boards))
+	//for i := 0; i < 10; i++ {
+	//	fmt.Println(boards[0][i])
+	//}
+	//fmt.Println("===================1======================")
+	////fmt.Println(len(boards[1]))
+	//for i := 0; i < 12; i++ {
+	//	fmt.Println(boards[1][i])
+	//}
+	//fmt.Println("===================2======================")
+	////fmt.Println(boards[2])
+	//for i := 0; i < 14; i++ {
+	//	fmt.Println(boards[2][i])
+	//}
 
 	//for i := 1; i <= numGen; i++ {
 	//	fmt.Println(boards[i])

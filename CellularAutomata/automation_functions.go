@@ -13,18 +13,16 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 	numRows := CountRows(currBoard)
 	numCols := CountCols(currBoard)
 
+	// surround with D
 	currBoardWithD := SurroundWithD(currBoard, numRows, numCols)
 
 	// 开始读取
 	newBoard := SurroundWithD(currBoard, numRows, numCols)
 	for r := 1; r < numRows-1; r++ {
 		for c := 1; c < numCols-1; c++ {
-			//注意这里返回的是key-val形式的{C 0}
 			newBoard[r][c] = ObtainNeighbors(currBoardWithD, r, c, numRows, numCols, b)
 		}
 	}
-
-	//return newBoard
 
 	newStrategyBoard := SurroundWithD(currBoard, numRows, numCols)
 
@@ -34,7 +32,6 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 		}
 	}
 
-	//return newStrategyBoard
 	// 去除外层的D
 	finalStrategyBoard := InitializeBoard(numRows, numCols)
 	for r := 1; r < numRows+1; r++ {
@@ -47,37 +44,24 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 }
 
 func SurroundWithD(currBoard GameBoard, numRows, numCols int) GameBoard {
-	// 棋盘周围围上一圈
+	// 初始+2的棋盘
+	currBoardWithD := InitializeBoard(numRows+2, numCols+2)
 
-	currBoardWithD := InitializeBoard(numRows+1, numCols+1)
+	for r := 0; r < numRows+2; r++ {
+		currBoardWithD[r][0] = Cell{strategy: "D", score: 0.0}
+		currBoardWithD[r][numCols+1] = Cell{strategy: "D", score: 0.0}
+	}
 
-	//for r := 0; r < numRows+1; r++ {
-	//	currBoardWithD[r][0] = Cell{strategy: "D", score: 0.0}
-	//	currBoardWithD[r][numCols] = Cell{strategy: "D", score: 0.0}
-	//}
-	//
-	//for c := 0; c < numCols+1; c++ {
-	//	currBoardWithD[0][c] = Cell{strategy: "D", score: 0.0}
-	//	currBoardWithD[numRows][c] = Cell{strategy: "D", score: 0.0}
-	//}
-	//
-	//for r := 1; r < numRows; r++ {
-	//	for c := 1; c < numCols; c++ {
-	//		currBoardWithD[r][c] =currBoard[r][c]
-	//	}
-	//}
-	//
-	//
-	//return currBoardWithD
+	for c := 0; c < numCols+1; c++ {
+		currBoardWithD[0][c] = Cell{strategy: "D", score: 0.0}
+		currBoardWithD[numRows+1][c] = Cell{strategy: "D", score: 0.0}
+	}
 
-	for r := 0; r < numRows+1; r++ {
-		for c := 0; c < numCols+1; c++ {
-			if r == 0 || r == numRows || c == 0 || c == numCols {
-				currBoardWithD[r][c] = Cell{strategy: "D", score: 0.0}
-			} else {
-				//注意这里返回的是key-val形式的{C 0}
-				currBoardWithD[r+1][c+1] = currBoard[r][c]
-			}
+	// 将老棋盘打入带D的新棋盘
+
+	for r := 0; r < numRows; r++ {
+		for c := 0; c < numCols; c++ {
+			currBoardWithD[r+1][c+1] = currBoard[r][c]
 		}
 	}
 	return currBoardWithD
