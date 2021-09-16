@@ -16,18 +16,18 @@ type GameBoard [][]Cell
 
 func main() {
 	fmt.Println("Prisoner paradox initialized")
-	//initialBoardFile := "CellularAutomata/boards/smallfield.txt" // my starting GameBoard file name
-	initialBoardFile := "CellularAutomata/boards/f99.txt" // my starting GameBoard file name
+	initialBoardFile := "CellularAutomata/boards/smallfield.txt" // my starting GameBoard file name
+	//initialBoardFile := "CellularAutomata/boards/f99.txt" // my starting GameBoard file name
 	//initialBoardFile := "CellularAutomata/boards/rand200-10.txt" // my starting GameBoard file name
 	outputFileDir := "CellularAutomata/output/b_1.65_numGen_30.gif"
 	// set the weight b
-	b := 1.65
+	//b := 1.65
 	//b := 2.0
-	//b := 1.86
+	b := 1.86
 
 	// set the number of generation
-	//numGen := 10
-	numGen := 30
+	numGen := 10
+	//numGen := 200
 
 	// set the cell width
 	cellWidth := 5
