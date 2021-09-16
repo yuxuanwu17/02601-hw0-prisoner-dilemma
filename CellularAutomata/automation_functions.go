@@ -19,7 +19,7 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 
 	for r := 0; r < numRows; r++ {
 		for c := 0; c < numCols; c++ {
-			//注意这里返回的是key-val形式的{C 0}
+			// 这里考虑传递值
 			newBoard[r][c] = ObtainNeighbors(currBoard, r, c, numRows, numCols, b)
 		}
 	}
@@ -65,6 +65,27 @@ func ObtainNeighbors(board GameBoard, i, j, numRow, numCol int, b float64) Cell 
 	board[i][j] = ValueCalCell(board[i][j], count, b)
 	return board[i][j]
 }
+
+//func StrategyReplaceByNbrs(board GameBoard, i, j, numRow, numCol int, b float64) Cell {
+//	numRows := CountRows(board)
+//	numCols := CountCols(board)
+//	newBoard := InitializeBoard(numRows, numCols)
+//	neighbors := []Cell{}
+//	for r := i - 1; r <= i+1; r++ {
+//		for c := j - 1; c <= j+1; c++ {
+//			if r == i && c == j {
+//				continue
+//			}
+//			if r >= 0 && c >= 0 && r < numRow && c < numCol {
+//				neighbors = append(neighbors, board[r][c])
+//			}
+//		}
+//	}
+//
+//	newBoard[i][j] = FindMaxNbr(neighbors)
+//
+//	return newBoard[i][j]
+//}
 
 func StrategyReplaceByNbrs(board GameBoard, i, j, numRow, numCol int, b float64) Cell {
 	numRows := CountRows(board)
