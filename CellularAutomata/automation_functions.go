@@ -95,9 +95,6 @@ func SurroundWithD(currBoard GameBoard, numRows, numCols int) GameBoard {
 }
 
 func StrategyReplaceByNbrs(board GameBoard, i, j int) Cell {
-	numRows := CountRows(board)
-	numCols := CountCols(board)
-	newBoard := InitializeBoard(numRows, numCols)
 
 	center := board[i][j]
 	northwest := board[i-1][j-1]
@@ -110,23 +107,19 @@ func StrategyReplaceByNbrs(board GameBoard, i, j int) Cell {
 	west := board[i][j-1]
 
 	neighbors := []Cell{northwest, north, northeast, east, southeast, south, southwest, west, center}
-	neighbors_val := []float64{northwest.score, north.score, northeast.score, east.score, southeast.score, south.score, southwest.score, west.score, center.score}
-	updateCell_index := FindMaxNbr(neighbors_val)
-	newBoard[i][j] = neighbors[updateCell_index]
-
-	return newBoard[i][j]
+	return FindMaxNbr(neighbors)
 }
 
-func FindMaxNbr(neighbors []float64) int {
-	tempMax := 0.0
-	tempidx := 0
-	for idx, neighbor := range neighbors {
-		if neighbor >= tempMax {
+func FindMaxNbr(neighbors []Cell) Cell {
+	tempMax := Cell{strategy: "", score: 0.0}
+	for _, neighbor := range neighbors {
+		if neighbor.score >= tempMax.score {
 			tempMax = neighbor
-			tempidx = idx
 		}
 	}
-	return tempidx
+	tempMax.score = 0.0
+	return tempMax
+
 }
 
 func ObtainNeighbors(board GameBoard, i, j int, b float64) Cell {
