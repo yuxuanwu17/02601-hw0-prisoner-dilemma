@@ -1,13 +1,28 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
+
+func timeCost() func() {
+	start := time.Now()
+	return func() {
+		tc := time.Since(start)
+		fmt.Printf("该函数执行完成耗时 = %v\n", tc)
+	}
+}
 
 func PlaySpatialGames(initialBoard GameBoard, numGens int, b float64) []GameBoard {
 	boards := make([]GameBoard, numGens+1)
 	boards[0] = initialBoard
 	for i := 1; i <= numGens; i++ {
 		fmt.Println("Round", i)
+		//start := time.Now()
+
 		boards[i] = UpdateBoard(boards[i-1], b)
+		//tc := time.Since(start)
+		//fmt.Printf("该函数执行完成耗时 = %v\n", tc)
 	}
 	return boards
 }
@@ -19,11 +34,10 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 	// surround with D
 	currBoardWithD := SurroundWithD(currBoard, numRows, numCols)
 
-	// 开始读取，读取到newBoard上
+	// 开始读取，读取到newBoard上 2ms 左右
 	newBoard := SurroundWithD(currBoard, numRows, numCols)
 	for r := 1; r <= numRows; r++ {
 		for c := 1; c <= numCols; c++ {
-			// ObtainNeighbors是从（1，1）开始 到（8，8）结束
 			newBoard[r][c] = ObtainNeighbors(currBoardWithD, r, c, b)
 		}
 	}
@@ -31,13 +45,19 @@ func UpdateBoard(currBoard GameBoard, b float64) GameBoard {
 	// 创建新表，接受酒标
 	newStrategyBoard := SurroundWithD(currBoard, numRows, numCols)
 
+	//=============================
+	// 定位到bug
+	//=============================
+	start := time.Now()
+
 	for r := 1; r <= numRows; r++ {
 		for c := 1; c <= numCols; c++ {
-			newStrategyBoard[r][c] = StrateyReplaceByNbrs(newBoard, r, c, numRows, numCols)
+			newStrategyBoard[r][c] = StrategyReplaceByNbrs(newBoard, r, c)
 		}
 	}
 
-	//return newStrategyBoard
+	tc := time.Since(start)
+	fmt.Printf("该函数执行完成耗时 = %v\n", tc)
 
 	// 去除外层的D
 	finalStrategyBoard := InitializeBoard(numRows, numCols)
@@ -74,7 +94,7 @@ func SurroundWithD(currBoard GameBoard, numRows, numCols int) GameBoard {
 	return currBoardWithD
 }
 
-func StrateyReplaceByNbrs(board GameBoard, i, j, numRow, numCol int) Cell {
+func StrategyReplaceByNbrs(board GameBoard, i, j int) Cell {
 	numRows := CountRows(board)
 	numCols := CountCols(board)
 	newBoard := InitializeBoard(numRows, numCols)
@@ -90,10 +110,23 @@ func StrateyReplaceByNbrs(board GameBoard, i, j, numRow, numCol int) Cell {
 	west := board[i][j-1]
 
 	neighbors := []Cell{northwest, north, northeast, east, southeast, south, southwest, west, center}
-	updateCell := FindMaxNbr(neighbors)
-	newBoard[i][j] = updateCell
+	neighbors_val := []float64{northwest.score, north.score, northeast.score, east.score, southeast.score, south.score, southwest.score, west.score, center.score}
+	updateCell_index := FindMaxNbr(neighbors_val)
+	newBoard[i][j] = neighbors[updateCell_index]
 
 	return newBoard[i][j]
+}
+
+func FindMaxNbr(neighbors []float64) int {
+	tempMax := 0.0
+	tempidx := 0
+	for idx, neighbor := range neighbors {
+		if neighbor >= tempMax {
+			tempMax = neighbor
+			tempidx = idx
+		}
+	}
+	return tempidx
 }
 
 func ObtainNeighbors(board GameBoard, i, j int, b float64) Cell {
@@ -111,18 +144,6 @@ func ObtainNeighbors(board GameBoard, i, j int, b float64) Cell {
 	board[i][j] = ValueCalCell(center, neighbors, b)
 
 	return board[i][j]
-}
-
-func FindMaxNbr(neighbors []Cell) Cell {
-	tempMax := Cell{strategy: "", score: 0.0}
-	for _, neighbor := range neighbors {
-		if neighbor.score >= tempMax.score {
-			tempMax = neighbor
-		}
-	}
-	tempMax.score = 0.0
-	return tempMax
-
 }
 
 func ValueCalCell(center Cell, neighbors []Cell, b float64) Cell {
